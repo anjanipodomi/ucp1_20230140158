@@ -3,31 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AboutController;
-use Illuminate\Support\Facades\Gate;
-use App\Models\Product;
-use Illuminate\Support\Facades\Auth;
-
-Route::get('/test-policy', function () {
-    $product = Product::first();
-
-    if (!$product) {
-        return "DATA PRODUCT KOSONG";
-    }
-
-    if (Auth::user()->can('delete', $product)) {
-        return "BOLEH HAPUS";
-    } else {
-        return "TIDAK BOLEH";
-    }
-})->middleware('auth');
-
-Route::get('/export-product', function () {
-    if (!Gate::allows('export-product')) {
-        abort(403);
-    }
-
-    return "Export berhasil!";
-})->middleware('auth');
+use App\Http\Controllers\ProductController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -37,14 +13,23 @@ Route::get('/dashboard', function () {
     return view('dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+Route::get('/about', [AboutController::class, 'index'])
+    ->middleware(['auth'])
+    ->name('about');
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-});
 
-Route::get('/about', [AboutController::class, 'index'])
-    ->middleware(['auth'])
-    ->name('about');
+    // ROUTE PRODUCT 
+    Route::get('/product', [ProductController::class, 'index'])->name('product.index');
+    Route::get('/product/create', [ProductController::class, 'create'])->name('product.create');
+    Route::post('/product/store', [ProductController::class, 'store'])->name('product.store');
+    Route::get('/product/view/{id}', [ProductController::class, 'show'])->name('product.show');
+    Route::get('/product/edit/{id}', [ProductController::class, 'edit'])->name('product.edit');
+    Route::put('/product/update/{id}', [ProductController::class, 'update'])->name('product.update');
+    Route::delete('/product/delete/{id}', [ProductController::class, 'destroy'])->name('product.destroy');
+});
 
 require __DIR__.'/auth.php';
