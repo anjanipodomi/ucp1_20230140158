@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
+use App\Http\Requests\StoreProductRequest;
+use App\Http\Requests\UpdateProductRequest;
 
 class ProductController extends Controller
 {
@@ -19,13 +21,9 @@ class ProductController extends Controller
         return view('product.create');
     }
 
-    public function store(Request $request)
+    public function store(StoreProductRequest $request)
     {
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'qty' => 'required|integer',
-            'price' => 'required|numeric',
-        ]);
+        $validated = $request->validated();
 
         Product::create([
             'name' => $validated['name'],
@@ -37,7 +35,6 @@ class ProductController extends Controller
         return redirect()->route('product.index')
             ->with('success', 'Product created successfully.');
     }
-
 
     public function export()
     {
@@ -61,7 +58,7 @@ class ProductController extends Controller
         return view('product.edit', compact('product'));
     }
 
-    public function update(Request $request, $id)
+    public function update(UpdateProductRequest $request, $id)
     {
         $product = Product::findOrFail($id);
 
@@ -69,17 +66,18 @@ class ProductController extends Controller
             abort(403);
         }
 
-        $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'qty' => 'required|integer',
-            'price' => 'required|numeric',
-        ]);
+        $validated = $request->validated();
 
-        $product->update([
-            'name' => $validated['name'],
-            'qty' => $validated['qty'],
-            'price' => $validated['price'],
-        ]);
+        // 🔥 CEK PERUBAHAN
+        if (
+            $product->name == $validated['name'] &&
+            $product->qty == $validated['qty'] &&
+            $product->price == $validated['price']
+        ) {
+            return back()->with('error', 'Tidak ada perubahan data');
+        }
+
+        $product->update($validated);
 
         return redirect()->route('product.index')
             ->with('success', 'Product updated successfully.');

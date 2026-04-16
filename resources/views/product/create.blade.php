@@ -28,6 +28,16 @@
                 <form action="{{ route('product.store') }}" method="POST" class="space-y-5">
                     @csrf
 
+                    @if ($errors->any())
+                        <div class="mb-4 p-3 bg-red-100 text-red-700 rounded">
+                            <ul class="list-disc pl-5">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
+                    @endif
+
                     {{-- Product Name --}}
                     <div>
                         <label for="name" class="block text-sm font-medium text-gray-700 mb-2">
