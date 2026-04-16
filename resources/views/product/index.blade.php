@@ -6,6 +6,8 @@
                 
                 {{-- Header --}}
                 <div class="flex items-start justify-between mb-6">
+    
+                    {{-- Kiri: Judul --}}
                     <div>
                         <h2 class="text-2xl font-bold text-gray-900 tracking-tight">
                             Product List
@@ -15,27 +17,27 @@
                         </p>
                     </div>
 
-                    @auth
-                    @if(auth()->user()->role === 'admin')
-                        <a href="{{ route('product.create') }}"
-                        class="inline-flex items-center gap-2 px-4 py-2 bg-black hover:bg-gray-800 text-white text-sm font-medium rounded-lg transition duration-150 shadow-sm">
-                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24"
-                                stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                    d="M12 4v16m8-8H4"/>
-                            </svg>
-                            Add Product
-                        </a>
-                    @endif
-                @endauth
-                </div>
+                    {{-- Kanan: Tombol --}}
+                    <div class="flex items-center gap-2">
 
-                {{-- Flash Message --}}
-                @if(session('success'))
-                    <div class="mb-4 px-4 py-3 bg-green-50 border border-green-200 text-green-700 rounded-lg text-sm">
-                        {{ session('success') }}
+                        {{-- Tombol Export (pakai Gate) --}}
+                        @can('export-product')
+                            <a href="{{ route('product.export') }}"
+                            class="px-4 py-2 bg-green-600 text-white rounded">
+                                Export
+                            </a>
+                        @endcan
+
+                        {{-- Tombol Add Product --}}
+                        @auth
+                            <a href="{{ route('product.create') }}"
+                            class="px-4 py-2 bg-black text-white rounded">
+                                Add Product
+                            </a>
+                        @endauth
+
                     </div>
-                @endif
+                </div>
 
                 {{-- Table --}}
                 <div class="overflow-x-auto rounded-lg border border-gray-200">
@@ -99,26 +101,26 @@
                                                 👁
                                             </a>
 
-                                            @auth
-                                                @if(auth()->user()->role === 'admin')
-                                                    <a href="{{ route('product.edit', $product->id) }}"
-                                                    class="text-gray-400 hover:text-amber-500 transition"
-                                                    title="Edit">
-                                                        ✏
-                                                    </a>
+                                            @can('update', $product)
+                                                <a href="{{ route('product.edit', $product->id) }}"
+                                                class="text-gray-400 hover:text-amber-500 transition"
+                                                title="Edit">
+                                                    ✏
+                                                </a>
+                                            @endcan
 
-                                                    <form action="{{ route('product.destroy', $product->id) }}" method="POST"
-                                                        onsubmit="return confirm('Delete this product?')">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit"
-                                                                class="text-gray-400 hover:text-red-500 transition"
-                                                                title="Delete">
-                                                            🗑
-                                                        </button>
-                                                    </form>
-                                                @endif
-                                            @endauth
+                                            @can('delete', $product)
+                                                <form action="{{ route('product.destroy', $product->id) }}" method="POST"
+                                                    onsubmit="return confirm('Delete this product?')">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit"
+                                                            class="text-gray-400 hover:text-red-500 transition"
+                                                            title="Delete">
+                                                        🗑
+                                                    </button>
+                                                </form>
+                                            @endcan
                                         </div>
                                     </td>
                                 </tr>

@@ -24,6 +24,9 @@ Route::middleware('auth')->group(function () {
 
     // ROUTE PRODUCT 
     Route::get('/product', [ProductController::class, 'index'])->name('product.index');
+    Route::get('/product/export', [ProductController::class, 'export'])
+        ->middleware('can:export-product')
+        ->name('product.export');
     Route::get('/product/create', [ProductController::class, 'create'])->name('product.create');
     Route::post('/product/store', [ProductController::class, 'store'])->name('product.store');
     Route::get('/product/view/{id}', [ProductController::class, 'show'])->name('product.show');

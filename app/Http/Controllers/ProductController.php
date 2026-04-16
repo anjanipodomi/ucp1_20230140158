@@ -3,18 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
-use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Gate;
 
 class ProductController extends Controller
 {
-    private function ensureAdmin()
-    {
-        if (auth()->user()->role !== 'admin') {
-            abort(403, 'Akses ditolak. Hanya admin yang dapat melakukan aksi ini.');
-        }
-    }
-
     public function index()
     {
         $products = Product::with('user')->get();
@@ -23,27 +16,32 @@ class ProductController extends Controller
 
     public function create()
     {
-        $this->ensureAdmin();
-
-        $users = User::orderBy('name')->get();
-        return view('product.create', compact('users'));
+        return view('product.create');
     }
 
     public function store(Request $request)
     {
-        $this->ensureAdmin();
-
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'qty' => 'required|integer',
             'price' => 'required|numeric',
-            'user_id' => 'required|exists:users,id',
         ]);
 
-        Product::create($validated);
+        Product::create([
+            'name' => $validated['name'],
+            'qty' => $validated['qty'],
+            'price' => $validated['price'],
+            'user_id' => auth()->id(),
+        ]);
 
         return redirect()->route('product.index')
             ->with('success', 'Product created successfully.');
+    }
+
+
+    public function export()
+    {
+        return 'Export berhasil (hanya admin yang bisa akses)';
     }
 
     public function show($id)
@@ -54,28 +52,34 @@ class ProductController extends Controller
 
     public function edit($id)
     {
-        $this->ensureAdmin();
-
         $product = Product::findOrFail($id);
-        $users = User::orderBy('name')->get();
 
-        return view('product.edit', compact('product', 'users'));
+        if (Gate::denies('update', $product)) {
+            abort(403);
+        }
+
+        return view('product.edit', compact('product'));
     }
 
     public function update(Request $request, $id)
     {
-        $this->ensureAdmin();
-
         $product = Product::findOrFail($id);
+
+        if (Gate::denies('update', $product)) {
+            abort(403);
+        }
 
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'qty' => 'required|integer',
             'price' => 'required|numeric',
-            'user_id' => 'required|exists:users,id',
         ]);
 
-        $product->update($validated);
+        $product->update([
+            'name' => $validated['name'],
+            'qty' => $validated['qty'],
+            'price' => $validated['price'],
+        ]);
 
         return redirect()->route('product.index')
             ->with('success', 'Product updated successfully.');
@@ -83,9 +87,12 @@ class ProductController extends Controller
 
     public function destroy($id)
     {
-        $this->ensureAdmin();
-
         $product = Product::findOrFail($id);
+
+        if (Gate::denies('delete', $product)) {
+            abort(403);
+        }
+
         $product->delete();
 
         return redirect()->route('product.index')

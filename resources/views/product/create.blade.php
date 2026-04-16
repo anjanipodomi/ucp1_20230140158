@@ -86,27 +86,8 @@
                     </div>
 
                     {{-- Owner --}}
-                    <div>
-                        <label for="user_id" class="block text-sm font-medium text-gray-700 mb-2">
-                            Owner
-                        </label>
-                        <select
-                            id="user_id"
-                            name="user_id"
-                            class="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
-                        >
-                            <option value="">Select Owner</option>
-                            @foreach ($users as $user)
-                                <option value="{{ $user->id }}" {{ old('user_id') == $user->id ? 'selected' : '' }}>
-                                    {{ $user->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('user_id')
-                            <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
-                        @enderror
-                    </div>
-
+                    <input type="hidden" name="user_id" value="{{ auth()->id() }}">
+            
                     {{-- Actions --}}
                     <div class="flex justify-end gap-3 pt-4">
                         <a href="{{ route('product.index') }}"
