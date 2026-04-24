@@ -30,10 +30,12 @@
 
                         {{-- Tombol Add Product --}}
                         @auth
-                            <a href="{{ route('product.create') }}"
-                            class="px-4 py-2 bg-black text-white rounded">
-                                Add Product
-                            </a>
+                            @if(auth()->user()->role === 'admin')
+                                <a href="{{ route('product.create') }}"
+                                class="px-4 py-2 bg-black text-white rounded">
+                                    Add Product
+                                </a>
+                            @endif
                         @endauth
 
                     </div>
@@ -93,34 +95,16 @@
                                         {{ $product->user->name ?? '-' }}
                                     </td>
 
-                                    <td class="px-6 py-4">
-                                        <div class="flex items-center justify-center gap-3">
-                                            <a href="{{ route('product.show', $product->id) }}"
-                                            class="text-gray-400 hover:text-indigo-500 transition"
-                                            title="View">
-                                                👁
-                                            </a>
-
-                                            @can('update', $product)
-                                                <a href="{{ route('product.edit', $product->id) }}"
-                                                class="text-gray-400 hover:text-amber-500 transition"
-                                                title="Edit">
-                                                    ✏
-                                                </a>
-                                            @endcan
-
-                                            @can('delete', $product)
-                                                <form action="{{ route('product.destroy', $product->id) }}" method="POST"
-                                                    onsubmit="return confirm('Delete this product?')">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit"
-                                                            class="text-gray-400 hover:text-red-500 transition"
-                                                            title="Delete">
-                                                        🗑
-                                                    </button>
-                                                </form>
-                                            @endcan
+                        
+                                            <td class="px-6 py-4">
+                                                <div class="flex items-center justify-center gap-3">
+                                                    <a href="{{ route('product.show', $product->id) }}"
+                                                    class="text-gray-400 hover:text-indigo-500 transition"
+                                                    title="View">
+                                                        👁
+                                                    </a>
+                                                </div>
+                                            </td>
                                         </div>
                                     </td>
                                 </tr>

@@ -51,7 +51,7 @@ class ProductController extends Controller
     {
         $product = Product::findOrFail($id);
 
-        if (Gate::denies('update', $product)) {
+        if (auth()->user()->role !== 'admin') {
             abort(403);
         }
 
@@ -62,13 +62,12 @@ class ProductController extends Controller
     {
         $product = Product::findOrFail($id);
 
-        if (Gate::denies('update', $product)) {
+        if (auth()->user()->role !== 'admin') {
             abort(403);
         }
 
         $validated = $request->validated();
 
-        // 🔥 CEK PERUBAHAN
         if (
             $product->name == $validated['name'] &&
             $product->qty == $validated['qty'] &&
@@ -87,7 +86,7 @@ class ProductController extends Controller
     {
         $product = Product::findOrFail($id);
 
-        if (Gate::denies('delete', $product)) {
+        if (auth()->user()->role !== 'admin') {
             abort(403);
         }
 
