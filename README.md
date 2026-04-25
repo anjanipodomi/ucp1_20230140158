@@ -1,1 +1,1 @@
-Screenshot semua praktikum ada di folder screenshot.tugas  
+Screenshot semua praktikum/UCP ada di folder screenshot.tugas  
