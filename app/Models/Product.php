@@ -16,11 +16,17 @@ class Product extends Model
         'qty',
         'price',
         'user_id',
+        'category_id', // ini supaya category bisa disimpan saat create/update product
     ];
 
     // RELASI KE USER (OWNER)
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(Category::class); // setiap product punya 1 category
     }
 }
