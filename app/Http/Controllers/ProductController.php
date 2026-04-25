@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
+use App\Models\Category; // memanggil model Category agar bisa dipakai di ProductController
 
 class ProductController extends Controller
 {
@@ -18,7 +19,11 @@ class ProductController extends Controller
 
     public function create()
     {
-        return view('product.create');
+        $categories = Category::all();
+        // mengambil semua data category dari database untuk ditampilkan di dropdown Add Product
+
+        return view('product.create', compact('categories'));
+        // mengirim data category ke halaman form tambah product
     }
 
     public function store(StoreProductRequest $request)
@@ -26,10 +31,14 @@ class ProductController extends Controller
         $validated = $request->validated();
 
         Product::create([
-            'name' => $validated['name'],
-            'qty' => $validated['qty'],
-            'price' => $validated['price'],
-            'user_id' => auth()->id(),
+        'name' => $validated['name'],
+        'qty' => $validated['qty'],
+        'price' => $validated['price'],
+        'category_id' => $validated['category_id'],
+        // menyimpan category yang dipilih ke tabel products
+
+        'user_id' => auth()->id(),
+        // menyimpan user yang sedang login sebagai pemilik product
         ]);
 
         return redirect()->route('product.index')

@@ -56,6 +56,34 @@
                         @enderror
                     </div>
 
+                    {{-- Category --}}
+                    <div>
+                        <label for="category_id" class="block text-sm font-medium text-gray-700 mb-2">
+                            Kategori
+                        </label>
+
+                        <select
+                            id="category_id"
+                            name="category_id"
+                            class="w-full px-4 py-3 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
+                        >
+                            <option value="">-- Pilih Kategori --</option>
+                            {{-- pilihan awal sebelum user memilih kategori --}}
+
+                            @foreach ($categories as $category)
+                                <option value="{{ $category->id }}" {{ old('category_id') == $category->id ? 'selected' : '' }}>
+                                    {{ $category->name }}
+                                </option>
+                                {{-- menampilkan nama kategori dari database --}}
+                            @endforeach
+                        </select>
+
+                        @error('category_id')
+                            <p class="mt-1 text-xs text-red-500">{{ $message }}</p>
+                        @enderror
+                        {{-- menampilkan pesan error jika kategori belum dipilih --}}
+                    </div>
+
                     {{-- Quantity & Price --}}
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
